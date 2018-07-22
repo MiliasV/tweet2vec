@@ -6,7 +6,6 @@ import sys
 import batch_char as batch
 import cPickle as pkl
 import io
-
 from t2v import tweet2vec, init_params, load_params
 from settings_char import N_BATCH, MAX_LENGTH, MAX_CLASSES
 

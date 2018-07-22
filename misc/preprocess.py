@@ -1,10 +1,13 @@
 import re
 import sys
 import io
+sys.path.append("..")
+sys.path.append("../..")
+import postgis_functions
 
 # input and output files
-infile = sys.argv[1]
-outfile = sys.argv[2]
+# infile = sys.argv[1]
+outfile = "/home/bill/Desktop/thesis/code/tweet2vec/misc/processed_tweets.txt"
 
 regex_str = [
     r'<[^>]+>', # HTML tags
@@ -20,8 +23,10 @@ regex_str = [
 
 tokens_re = re.compile(r'('+'|'.join(regex_str)+')', re.VERBOSE | re.IGNORECASE)
 
+
 def tokenize(s):
     return tokens_re.findall(s)
+
 
 def preprocess(s, lowercase=True):
     tokens = tokenize(s)
@@ -52,6 +57,18 @@ def preprocess(s, lowercase=True):
     return ' '.join([t for t in tokens if t]).replace('rt @user : ','')
 
 
-with io.open(outfile, 'w') as tweet_processed_text, io.open(infile, 'r') as fin:
-    for line in fin:
-        tweet_processed_text.write(preprocess(line.rstrip())+'\n')
+ttable = "matched_twitter_ams"
+#tweets = postgis_functions.get_rows_from_table_where_col_is_null(ttable, "processedtext")
+tweets = postgis_functions.get_rows_from_table(ttable)
+count=0
+with open(outfile, 'w') as file:
+    for t in tweets:
+        count+=1
+        file.write(t["processedtext"].rstrip()+'\n')
+        #print(t["text"])
+        #print(t["processedtext"])
+        print(count)
+        #postgis_functions.add_processed_text_to_table(preprocess(t["text"].replace("'", "''")),
+        # "processedtext ttable, t["id"])
+# with io.open(outfile, 'w') as tweet_processed_text, io.open(infile, 'r') as fin:
+#     for line in fin:
